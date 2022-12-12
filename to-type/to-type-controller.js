@@ -16,8 +16,8 @@ const sanitizeGoals = (res) => {
     return {
         goals: res.goals.map((g) => {
             return{
-                title: replaceSpecial(g.title),
-                summary: replaceSpecial(g.summary)
+                title: replaceSpecial(g.title).replaceAll("\xa0", ' ').replaceAll("\u2013", "-"),
+                summary: replaceSpecial(g.summary).replaceAll("\xa0", ' ').replaceAll("\u2013", "-")
             }
         })
     }
