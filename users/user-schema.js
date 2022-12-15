@@ -9,6 +9,7 @@ const usersSchema = mongoose.Schema({
     email: String,
     firstName: String,
     lastName: String,
+    type: {type: String, enum: ["MOD", "USER"], default: "USER"}
 }, {collection: 'users'})
 
 export default usersSchema
