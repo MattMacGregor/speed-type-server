@@ -55,9 +55,8 @@ const UsersController = (app) => {
         }
     }
 
-    const findUserById = async (req, res) => {
-        const uid = req.params.uid
-        const user = await userDao.findUserById(uid)
+    const findUserByName = async (req, res) => {
+        const user = await userDao.findUserByName(req.params.username)
         if (user) {
             res.json(user)
             return
@@ -66,7 +65,7 @@ const UsersController = (app) => {
     }
 
     app.get('/api/users', findAllUsers)
-    app.get('/api/users/:uid', findUserById)
+    app.get('/api/users/:username', findUserByName)
     app.post('/api/users', createUser)
     app.put('/api/users/:uid', updateUser)
     app.delete('/api/users/:uid', deleteUser)

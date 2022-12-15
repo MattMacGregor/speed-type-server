@@ -13,10 +13,13 @@ export default (app) => {
 }
 
 const sanitizeGoals = (res) => {
+    console.log("Res goals: " + res.goals[0])
     return {
+        ...res,
         goals: res.goals.map((g) => {
             return{
                 title: replaceSpecial(g.title).replaceAll("\xa0", ' ').replaceAll("\u2013", "-"),
+                ...res,
                 summary: replaceSpecial(g.summary).replaceAll("\xa0", ' ').replaceAll("\u2013", "-")
             }
         })
@@ -34,13 +37,31 @@ const getOnDay = async (req, res) => {
     if ( m < 10 ) m = '0' + m;
     const response = await axios.get(`${W_FEEDS_API}/onthisday/${req.params.type}/${m}/${d}`);
     console.log(response.data);
-    const resJson = {
-        goals: response.data[req.params.type].filter((article, i) => article.text).map((article, i) => {
+    let goals = []
+    if(req.params.type != "all") {
+        goals = response.data[req.params.type].filter((article, i) => article.text).map((article, i) => {
             return {
                 title: article.pages[0].title.replaceAll('_', ' '),
                 summary: article.text,
             }
         })
+    } else {
+        const extractedGoals = Object.entries(response.data).map(([type, goals]) => {
+                return goals.filter((article, i) => article.text).map((article, i) => {
+                    return {
+                        title: article.pages[0].title.replaceAll('_', ' '),
+                        summary: article.text,
+                    }
+                })
+        })
+        goals = []
+        extractedGoals.forEach((goal) => {
+            goals = [...goals, ...goal];
+        })
+    }
+    const resJson = {
+        goals: goals,
+        typingId: `${d}:${m}:${req.params.type}`
     }
     console.log(sanitizeGoals(resJson));
     res.json(sanitizeGoals(resJson));
@@ -55,7 +76,8 @@ const getSearched = async (req, res) => {
                 title: article.title.replaceAll('_', ' '),
                 summary: article.description,     
             }
-        })
+        }),
+        typingId: `${req.params.terms}`
     }
     res.json(sanitizeGoals(resJson));
 }
@@ -65,10 +87,12 @@ const getRandom = async (req, res) => {
     const resJson = {
         goals: [
             {
+                titleRef: response.data.title,
                 title: response.data.title.replaceAll('_', ' '),
                 summary: response.data.extract,
             }
-        ]
+        ],
+        typingId: response.data.titles["canonical"],
     }
     res.json(sanitizeGoals(resJson));
 }

@@ -7,7 +7,7 @@ const replaySchema = mongoose.Schema({
     wpm: Number,
     accuracy: Number,
     time: Number,
-    date: Date
+    user: { type: mongoose.Schema.Types.ObjectId, ref:'UserModel'}, 
 }, { collection: "replays" })
 
 export default replaySchema

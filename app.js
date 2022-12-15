@@ -3,6 +3,7 @@ import cors from 'cors'
 import session from 'express-session'
 import toTypeController from './to-type/to-type-controller.js'
 import userController from './users/user-controller.js'
+import replayController from './replays/replay-controller.js'
 import mongoose from "mongoose"
 
 const app = express();
@@ -37,5 +38,5 @@ app.use(express.json())
 
 toTypeController(app)
 userController(app)
-
+replayController(app)
 app.listen(process.env.PORT || 4000)
